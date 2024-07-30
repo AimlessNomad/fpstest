@@ -2,34 +2,17 @@ extends CharacterBody3D
 
 
 const JUMP_VELOCITY = 4.5
-const SPEED_SCALE = 6.0 # Higher is faster
-const SWAP_SCALE = 6.0 # See below, lower makes the player jerk the other direction faster
-const DECEL_SCALE = 5.0 # Lower means player overmoves by less
-const TIMESCALE = 0.3 # How long it should take for the player to go from 0 to max velocity
-const DECEL_TIMESCALE = 0.35 # How long it should take for the player to go to a standstill
-
+const SPEED = 1.2
+const SPRINT_SPEED = 2
+const DAMPING = 0.7
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
-var progress = Vector3()
-var old_x_val = 0.0
-var old_z_val = 0.0
+var buildup = SPEED
 
 var mouse_sensitivity = 1200
 var mouse_relative_x = 0
 var mouse_relative_y = 0
-var lastDir = Vector3()
-
-func easingMod(x: float):
-	return [abs(x), x / abs(x)]
-
-func easeInSine(x: float):
-	var em = easingMod(x)
-	return em[1] * (1 - cos((em[0] * PI) / 2))
-	
-func easeOutQuad(x: float):
-	var em = easingMod(x)
-	return em[1] * (1 - (1 - em[0]) * (1 - em[0]))
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -56,51 +39,18 @@ func _physics_process(delta):
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-	print(direction)
-	print(transform.basis.z)
-	print(transform.basis.x)
-	if direction:
-		
-		if snapped(abs(direction.x), 0.0001) != snapped(abs(transform.basis.z.x), 0.0001): # Needs to be perp direction
-			progress.x = move_toward(progress.x, 1 * (direction.x / abs(direction.x)), delta / TIMESCALE)
-			velocity.x = easeOutQuad(progress.x) * abs(direction.x)
-			
-			if abs(velocity.x * SPEED_SCALE) < abs(old_x_val):
-				velocity.x *= SWAP_SCALE
-			else:
-				velocity.x *= SPEED_SCALE
-			
-		else:
-			print("alternate")
-			progress.x = move_toward(progress.x, 0, delta / DECEL_TIMESCALE)
-			velocity.x = easeOutQuad(progress.x) * DECEL_SCALE * abs(lastDir.x)
-			
-		if snapped(abs(direction.z), 0.0001) != snapped(abs(transform.basis.x.z), 0.0001): # Needs to be facing direction
-			progress.z = move_toward(progress.z, 1 * (direction.z / abs(direction.z)), delta / TIMESCALE)
-			velocity.z = easeOutQuad(progress.z) * abs(direction.z)
-			
-			if abs(velocity.z * SPEED_SCALE) < abs(old_z_val):
-				velocity.z *= SWAP_SCALE
-			else:
-				velocity.z *= SPEED_SCALE
-			
-		else:
-			print("alternate") # Make baseline velocity not 0 but the actual baseline for moving on one axis
-			progress.z = move_toward(progress.z, 0, delta / DECEL_TIMESCALE)
-			velocity.z = easeOutQuad(progress.z) * DECEL_SCALE * abs(lastDir.z)
-		
-		lastDir = direction
-		
+	
+	if Input.is_action_pressed("sprint"):
+		buildup = move_toward(buildup, SPRINT_SPEED, 0.05)
+		velocity.x += buildup * direction.x
+		velocity.z += buildup * direction.z
 	else:
-		progress.x = move_toward(progress.x, 0, delta / DECEL_TIMESCALE)
-		progress.z = move_toward(progress.z, 0, delta / DECEL_TIMESCALE)
-		velocity.x = easeOutQuad(progress.x) * DECEL_SCALE * abs(lastDir.x)
-		velocity.z = easeOutQuad(progress.z) * DECEL_SCALE * abs(lastDir.z)
-		
-	if is_nan(velocity.x): velocity.x = 0
-	if is_nan(velocity.z): velocity.z = 0
-	old_x_val = velocity.x
-	old_z_val = velocity.z
-	print("velocity z: " + str(velocity.z))
-	print("velocity x: " + str(velocity.x))
+		buildup = SPEED
+		velocity.x += SPEED * direction.x
+		velocity.z += SPEED * direction.z
+
+	velocity.x *= pow(1.0 - DAMPING, delta * 10)
+	velocity.z *= pow(1.0 - DAMPING, delta * 10)
+	
+	
 	move_and_slide()
