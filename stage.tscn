@@ -1,6 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://jc5kdxko5v3e"]
+[gd_scene load_steps=12 format=3 uid="uid://jc5kdxko5v3e"]
 
 [ext_resource type="PackedScene" uid="uid://c6l5cbnhvcbxy" path="res://player.tscn" id="1_xn2va"]
+[ext_resource type="PackedScene" uid="uid://bs5geor5w2lwa" path="res://enemy.tscn" id="2_gyg3r"]
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_quv4p"]
+vertices = PackedVector3Array(-29.5, 1, -29.5, -29.5, 1, 29.5, 29.5, 1, 29.5, 29.5, 1, -29.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wgaqx"]
 size = Vector3(60, 1, 60)
@@ -28,14 +33,19 @@ material = SubResource("StandardMaterial3D_hgikw")
 
 [node name="Stage" type="Node"]
 
-[node name="Ground" type="StaticBody3D" parent="."]
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.402076, 0.100004, 1.00172)
+navigation_mesh = SubResource("NavigationMesh_quv4p")
+navigation_layers = 2
+
+[node name="Ground" type="StaticBody3D" parent="NavigationRegion3D"]
 collision_layer = 2
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Ground"]
 shape = SubResource("BoxShape3D_wgaqx")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/Ground"]
 mesh = SubResource("BoxMesh_2ujod")
 
 [node name="Wall" type="StaticBody3D" parent="."]
@@ -63,8 +73,11 @@ size = 7.306
 transform = Transform3D(1, 0, 0, 0, -0.0642188, 0.997936, 0, -0.997936, -0.0642188, 0, 28.5921, 0)
 
 [node name="Block" type="StaticBody3D" parent="."]
+collision_layer = 2
+collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Block"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.28, 1.207, 0)
 shape = SubResource("BoxShape3D_x11ww")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Block"]
@@ -73,20 +86,31 @@ mesh = SubResource("BoxMesh_arr7m")
 
 [node name="Block2" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+collision_layer = 2
+collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Block2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.0351, -1, -1.01132)
 shape = SubResource("BoxShape3D_x11ww")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Block2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.2863, 1.2067, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 1, 0)
 mesh = SubResource("BoxMesh_arr7m")
 
 [node name="Block3" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+collision_layer = 2
+collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Block3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 1, 0)
 shape = SubResource("BoxShape3D_x11ww")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Block3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.2863, 1.2067, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 1, 0)
 mesh = SubResource("BoxMesh_arr7m")
+
+[node name="Enemy" parent="." instance=ExtResource("2_gyg3r")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 10)
+
+[connection signal="newPos" from="Player" to="Enemy" method="_on_player_new_pos"]

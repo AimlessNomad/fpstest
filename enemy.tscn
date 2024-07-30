@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://bs5geor5w2lwa"]
+
+[ext_resource type="Script" path="res://enemy.gd" id="1_bwv83"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7au2e"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_whil8"]
+
+[node name="Enemy" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_bwv83")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0884707, 0)
+shape = SubResource("CapsuleShape3D_7au2e")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_whil8")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+navigation_layers = 2
+avoidance_mask = 2
