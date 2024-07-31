@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3 uid="uid://dbduds4bsaaby"]
+
+[ext_resource type="Script" path="res://Bullet/Bullet.gd" id="1_o4xxq"]
+[ext_resource type="Texture2D" uid="uid://bdknsji4lw07x" path="res://Bullet/Assets/hole-difuse.png" id="1_phno7"]
+[ext_resource type="Texture2D" uid="uid://byc6edrbpdfog" path="res://Bullet/Assets/hole-normal.png" id="2_m88n3"]
+
+[node name="Node3d" type="Node3D"]
+script = ExtResource("1_o4xxq")
+
+[node name="Bullet" type="Decal" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.0129977, -0.0650783, 0)
+size = Vector3(0.157527, 0.16, 0.16)
+texture_albedo = ExtResource("1_phno7")
+texture_normal = ExtResource("2_m88n3")
