@@ -1,6 +1,7 @@
 extends CharacterBody3D
 
 signal newPos
+signal shotgun_hit
 
 const JUMP_VELOCITY = 4.5
 const SPEED = 1.2
@@ -14,7 +15,7 @@ var buildup = SPEED
 var random = RandomNumberGenerator.new()
 
 var weapon_selected = 0
-var weapons = [Callable(self, "shoot"), Callable(self, "shoot"), Callable(self, "shoot")]
+var weapons = [Callable(self, "shotgun"), Callable(self, "shotgun"), Callable(self, "shotgun")]
 @onready var camera3d = $Head/Camera3D
 @onready var screen_size = get_node("..").get_tree().root.get_visible_rect().size
 @onready var origin = screen_size / 2
@@ -73,24 +74,29 @@ func _physics_process(delta):
 	newPos.emit(position.x, position.z)
 
 
-func shoot():
+func shotgun():
 	var space_state = get_world_3d().direct_space_state
-	
 	var destination = Vector2()
-	destination.x = origin.x + random.randi_range(-screen_size.x / 64, screen_size.x / 64)
-	destination.y = origin.y + random.randi_range(-screen_size.y / 36, screen_size.y / 36)
+	var result
+	var query
 	
-	var query = gun_helper.create_ray(origin, destination, camera3d, 1000)
-	query.exclude = [self]
-	var result = space_state.intersect_ray(query)
-	
-	if(result):
-		var bulletInst = bullet_scene.instantiate() as Node3D
-		bulletInst.set_as_top_level(true)
-		get_parent().add_child(bulletInst)
-		bulletInst.global_transform.origin = result.position
-		bulletInst.look_at((result.position + result.normal),Vector3.BACK)
-	else:
-		print("Missed")
+	for i in range(0, 8):
+		destination.x = origin.x + random.randi_range(-screen_size.x / 64, screen_size.x / 64)
+		destination.y = origin.y + random.randi_range(-screen_size.y / 36, screen_size.y / 36)
+		
+		query = gun_helper.create_ray(origin, destination, camera3d, 30)
+		query.exclude = [self]
+		result = space_state.intersect_ray(query)
+		
+		if(result):
+			shotgun_hit.emit(result)
+			if(result.collider as Enemy != result.collider):
+				var bulletInst = bullet_scene.instantiate() as Node3D
+				bulletInst.set_as_top_level(true)
+				get_parent().add_child(bulletInst)
+				bulletInst.global_transform.origin = result.position
+				bulletInst.look_at((result.position + result.normal),Vector3.BACK)
+		else:
+			print("Missed")
 	
 	
