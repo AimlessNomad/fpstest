@@ -116,4 +116,5 @@ mesh = SubResource("BoxMesh_arr7m")
 [node name="Enemy" parent="." instance=ExtResource("2_gyg3r")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 10)
 
+[connection signal="hit" from="Player" to="Enemy" method="_on_shot"]
 [connection signal="newPos" from="Player" to="Enemy" method="_on_player_new_pos"]

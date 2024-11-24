@@ -1,26 +1,22 @@
 extends CharacterBody3D
+const Enemy = preload("res://enemy.gd")
+const Constants = preload('res://Helper/player_constants.gd')
 
 signal newPos
-signal shotgun_hit
-
-const JUMP_VELOCITY = 4.5
-const SPEED = 1.2
-const SPRINT_SPEED = 2
-const DAMPING = 0.7
+signal hit
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
-var buildup = SPEED
+var buildup = Constants.SPEED
 
 var random = RandomNumberGenerator.new()
 
+@export var bullet_scene: PackedScene
 var weapon_selected = 0
 var weapons = [Callable(self, "shotgun"), Callable(self, "shotgun"), Callable(self, "shotgun")]
 @onready var camera3d = $Head/Camera3D
 @onready var screen_size = get_node("..").get_tree().root.get_visible_rect().size
 @onready var origin = screen_size / 2
-
-@export var bullet_scene: PackedScene
 
 var mouse_sensitivity = 1200
 var mouse_relative_x = 0
@@ -48,7 +44,7 @@ func _physics_process(delta):
 
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
+		velocity.y = Constants.JUMP_VELOCITY
 	
 	if Input.is_action_just_pressed("shoot"):
 		weapons[weapon_selected].call()
@@ -59,44 +55,44 @@ func _physics_process(delta):
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 
 	if Input.is_action_pressed("sprint"):
-		buildup = move_toward(buildup, SPRINT_SPEED, 0.05)
-		velocity.x += buildup * direction.x
+		buildup = move_toward(buildup, Constants.SPRINT_SPEED, 0.05)
+		velocity.x += buildup * direction.x 
 		velocity.z += buildup * direction.z
 	else:
-		buildup = SPEED
-		velocity.x += SPEED * direction.x
-		velocity.z += SPEED * direction.z
+		buildup = Constants.SPEED
+		velocity.x += Constants.SPEED * direction.x
+		velocity.z += Constants.SPEED * direction.z
 
-	velocity.x *= pow(1.0 - DAMPING, delta * 10)
-	velocity.z *= pow(1.0 - DAMPING, delta * 10)
+	velocity.x *= pow(1.0 - Constants.DAMPING, delta * 10)
+	velocity.z *= pow(1.0 - Constants.DAMPING, delta * 10)
 
 	move_and_slide()
 	newPos.emit(position.x, position.z)
 
+func generic_gun(query):
+	var space_state = get_world_3d().direct_space_state
+	
+	var result = space_state.intersect_ray(query)
+	if(result):
+		if(result.collider is Enemy):
+			hit.emit(result, Constants.SHOTGUN_DAMAGE)
+		else:
+			var bulletInst = bullet_scene.instantiate() as Node3D
+			bulletInst.set_as_top_level(true)
+			get_parent().add_child(bulletInst)
+			bulletInst.global_transform.origin = result.position
+			#bulletInst.look_at((result.position + result.normal),Vector3.BACK)
+	else:
+		print("Missed")
+
 
 func shotgun():
-	var space_state = get_world_3d().direct_space_state
 	var destination = Vector2()
-	var result
 	var query
 	
 	for i in range(0, 8):
 		destination.x = origin.x + random.randi_range(-screen_size.x / 64, screen_size.x / 64)
 		destination.y = origin.y + random.randi_range(-screen_size.y / 36, screen_size.y / 36)
 		
-		query = gun_helper.create_ray(origin, destination, camera3d, 30)
-		query.exclude = [self]
-		result = space_state.intersect_ray(query)
-		
-		if(result):
-			shotgun_hit.emit(result)
-			if(result.collider as Enemy != result.collider):
-				var bulletInst = bullet_scene.instantiate() as Node3D
-				bulletInst.set_as_top_level(true)
-				get_parent().add_child(bulletInst)
-				bulletInst.global_transform.origin = result.position
-				bulletInst.look_at((result.position + result.normal),Vector3.BACK)
-		else:
-			print("Missed")
-	
-	
+		query = gun_helper.create_ray(origin, destination, camera3d, 30, [self])
+		generic_gun(query)

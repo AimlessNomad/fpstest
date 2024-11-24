@@ -2,6 +2,7 @@ extends CharacterBody3D
 
 var movement_speed: float = 2.0
 var movement_target_position: Vector3 = Vector3(-3.0,0.0,2.0)
+var health = 100
 
 @onready var navigation_agent: NavigationAgent3D = $NavigationAgent3D
 
@@ -44,3 +45,9 @@ func _on_player_new_pos(x, z):
 	dest.x = x
 	dest.z = z
 	set_movement_target(dest)
+
+
+func _on_shot(result, damage) -> void:
+	if(result.collider == self): 
+		health = health - damage
+		if(health <= 0): queue_free()
