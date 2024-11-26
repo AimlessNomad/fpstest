@@ -81,7 +81,8 @@ func generic_gun(query):
 			bulletInst.set_as_top_level(true)
 			get_parent().add_child(bulletInst)
 			bulletInst.global_transform.origin = result.position
-			#bulletInst.look_at((result.position + result.normal),Vector3.BACK)
+			if(result.normal != Vector3.BACK && result.normal != Vector3.FORWARD): 
+				bulletInst.look_at((result.position + result.normal),Vector3.BACK)
 	else:
 		print("Missed")
 
