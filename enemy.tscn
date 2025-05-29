@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://codgf4dgjwt52" path="res://Models/Textures/germ.jpg" id="2_4gyqm"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7au2e"]
+height = 1.71102
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_whil8"]
 
@@ -16,7 +17,7 @@ collision_mask = 3
 script = ExtResource("1_bwv83")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0884707, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
 shape = SubResource("CapsuleShape3D_7au2e")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
