@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://lgu4lvc5jo2o"
+path="res://.godot/imported/TestTarget.obj-3cd0925046d25db6a19c2a1f7db2df8c.mesh"
+
+[deps]
+
+files=["res://.godot/imported/TestTarget.obj-3cd0925046d25db6a19c2a1f7db2df8c.mesh"]
+
+source_file="res://Models/TestTarget.obj"
+dest_files=["res://.godot/imported/TestTarget.obj-3cd0925046d25db6a19c2a1f7db2df8c.mesh", "res://.godot/imported/TestTarget.obj-3cd0925046d25db6a19c2a1f7db2df8c.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false
