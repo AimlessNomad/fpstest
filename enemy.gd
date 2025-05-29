@@ -28,6 +28,7 @@ func set_movement_target(movement_target: Vector3):
 func _physics_process(delta):
 	# Add the gravity.
 	if not is_on_floor():
+		print("not on floor")
 		velocity.y -= 8 * delta
 		
 	if navigation_agent.is_navigation_finished():

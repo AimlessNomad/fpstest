@@ -1,0 +1,3 @@
+- fix the enemy not having any fall damage
+    - note that it can tell when its on the floor, and it works on other, smaller models, just for some reason it doesnt have gravity when over the map
+    - might be correlated to the fact that bullets also do not show??
