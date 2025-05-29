@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://dbduds4bsaaby"]
 
-[ext_resource type="Script" path="res://Bullet/Bullet.gd" id="1_o4xxq"]
+[ext_resource type="Script" uid="uid://70cjvu85ox5" path="res://Bullet/Bullet.gd" id="1_o4xxq"]
 [ext_resource type="Texture2D" uid="uid://bdknsji4lw07x" path="res://Bullet/Assets/hole-difuse.png" id="1_phno7"]
 [ext_resource type="Texture2D" uid="uid://byc6edrbpdfog" path="res://Bullet/Assets/hole-normal.png" id="2_m88n3"]
 
