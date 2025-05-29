@@ -77,11 +77,6 @@ data = PackedVector3Array(-0.8112, 0.0728, 0.6213, -0.9664, 0.0728, 0.714, -0.81
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_16g40")
 
-[node name="Wall" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.83479, 10.4079, -17.8453)
-collision_layer = 2
-collision_mask = 0
-
 [node name="Player" parent="." instance=ExtResource("1_xn2va")]
 transform = Transform3D(0.99145, 0, 0, 0, 0.99145, 0, 0, 0, 0.99145, 0, 2.95889, 0)
 
