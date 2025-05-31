@@ -9,15 +9,18 @@ signal hit
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var buildup = Constants.SPEED
 
-var random = RandomNumberGenerator.new()
-
 # Gun-related global variables
 @export var bullet_scene: PackedScene
 var weapon_selected = 0
-var weapons = [Callable(self, "shotgun"), Callable(self, "shotgun"), Callable(self, "shotgun")]
+var weapons = [Callable(gun_helper, "shotgun"), Callable(gun_helper, "shotgun"), Callable(gun_helper, "shotgun")]
+var random: RandomNumberGenerator = RandomNumberGenerator.new()
+
+# Used to aim and fire weapons
 @onready var camera3d = $Head/Camera3D
 @onready var screen_size = get_node("..").get_tree().root.get_visible_rect().size
 @onready var origin = screen_size / 2
+@onready var space_state = get_world_3d().direct_space_state
+@onready var firingInfo = [hit, bullet_scene, get_node(".."), self.get_rid()]
 
 # Mouse-related global variables
 var mouse_sensitivity = 1200
@@ -52,7 +55,7 @@ func _physics_process(delta):
 		velocity.y = Constants.JUMP_VELOCITY
 	
 	if Input.is_action_just_pressed("shoot"):
-		weapons[weapon_selected].call()
+		weapons[weapon_selected].call(origin, random, space_state, camera3d, firingInfo)
 	
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
@@ -75,33 +78,3 @@ func _physics_process(delta):
 	move_and_slide()
 	newPos.emit(position.x, position.z)
 
-#Handles shooting behavior shared between weapons
-func generic_gun(query):
-	var space_state = get_world_3d().direct_space_state
-	
-	var result = space_state.intersect_ray(query)
-	if(result):
-		if(result.collider is Enemy):
-			hit.emit(result, Constants.SHOTGUN_DAMAGE)
-		else:
-			var bulletInst = bullet_scene.instantiate() as Node3D
-			bulletInst.set_as_top_level(true)
-			get_parent().add_child(bulletInst)
-			bulletInst.global_transform.origin = result.position
-			if(result.normal != Vector3.BACK && result.normal != Vector3.FORWARD): 
-				bulletInst.look_at((result.position + result.normal),Vector3.BACK)
-	else:
-		print("Missed")
-
-
-# Unique shotgun behavior: fires 8 bullets in a spread within the shotgun crosshair
-func shotgun():
-	var destination = Vector2()
-	var query
-	
-	for i in range(0, 8):
-		destination.x = origin.x + random.randi_range(-screen_size.x / 64, screen_size.x / 64)
-		destination.y = origin.y + random.randi_range(-screen_size.y / 36, screen_size.y / 36)
-		
-		query = gun_helper.create_ray(origin, destination, camera3d, 30, [self])
-		generic_gun(query)
