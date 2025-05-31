@@ -1,4 +1,5 @@
 -move gun functions from player.gd to gun_helper.gd
+-menu and settings
 -double jump
 -wallrunning
 -more guns
